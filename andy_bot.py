@@ -15,6 +15,10 @@ class TicTacToe_Bot:
             self.you = "O"
         else:
             self.you = "X"
+        if self.me == "X":
+            self.first = True
+        else:
+            self.first = False
         row_one = row1
         row_two = row2
         row_three = row3
@@ -38,7 +42,16 @@ class Random_Bot(TicTacToe_Bot):
             self.decide_move()
 
 
-#class Better_Bot(TicTacToe_Bot):
+class Better_Bot(TicTacToe_Bot):
+
+    def decide_move(self):
+        pass
+
+    def strategy(self):
+        if self.first == True:
+            print("You are first")
+        else:
+            print("You are O's")
 
 
 
