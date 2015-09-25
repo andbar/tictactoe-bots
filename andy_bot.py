@@ -45,27 +45,11 @@ class TicTacToe_Bot:
     #            column3.append(row[2])
     #    return [column1, column2, column3]
 
-
-
     def decide_move(self):
         raise NotImplementedError("Decide move must be implemented in subclass")
 
 
-class Random_Bot(TicTacToe_Bot):
-
-    def decide_move(self):
-        row = random.randint(0, 2)
-        col = random.randint(0, 2)
-        if self.board[row][col] not in "XO":
-            print("{} {}".format(row, col))
-        else:
-            self.decide_move()
-
-
 class Better_Bot(TicTacToe_Bot):
-
-    def decide_move(self):
-        pass
 
     #def strategy(self):
     #    if self.first == True:
@@ -86,49 +70,104 @@ class Better_Bot(TicTacToe_Bot):
                 return (index, open_spots[0])
 
     def winning_row(self):
-        return self.win_or_block(self.board, self.me)
+        win_row = self.win_or_block(self.board, self.me)
+        if win_row:
+            return win_row
+        else:
+            return False
 
     def winning_column(self):
-        return self.win_or_block(self.columns, self.me)
+        win_col = self.win_or_block(self.columns, self.me)
+        if win_col:
+            return (win_col[1], win_col[0])
+        else:
+            return False
 
     def winning_diagonal(self):
-        return self.win_or_block(self.diagonals, self.me)
+        win_diag = self.win_or_block(self.diagonals, self.me)
+        if win_diag:
+            if win_diag == (1, 0):
+                return (0, 2)
+            elif win_diag == (1, 2):
+                return (2, 0)
+            elif win_diag == (1, 1):
+                return win_diag
+            else:
+                return (win_diag[1], win_diag[1])
+        else:
+            return False
 
     def blocking_row(self):
-        return self.win_or_block(self.board, self.you)
+        block_row = self.win_or_block(self.board, self.you)
+        if block_row:
+            return block_row
+        else:
+            return False
 
     def blocking_column(self):
-        return self.win_or_block(self.columns, self.you)
+        block_col = self.win_or_block(self.columns, self.you)
+        if block_col:
+            return (block_col[1], block_col[0])
+        else:
+            return False
 
     def blocking_diagonal(self):
-        return self.win_or_block(self.diagonals, self.you)
+        block_diag = self.win_or_block(self.diagonals, self.you)
+        if block_diag:
+            if block_diag == (1, 0):
+                return (0, 2)
+            elif block_diag == (1, 2):
+                return (2, 0)
+            elif block_diag == (1, 1):
+                return block_diag
+            else:
+                return (block_diag[1], block_diag[1])
+        else:
+            return False
 
     def winning_move(self):
         win_row = self.winning_row()
         win_col = self.winning_column()
         win_diag = self.winning_diagonal()
-        if type(win_row) == tuple:
+        if win_row:
             return win_row
-        if type(win_col) == tuple:
+        elif win_col:
             return win_col
-        if type(win_diag) == tuple:
+        elif win_diag:
             return win_diag
+        else:
+            return False
 
     def blocking_move(self):
         block_row = self.blocking_row()
         block_col = self.blocking_column()
         block_diag = self.blocking_diagonal()
-        if type(block_row) == tuple:
+        if block_row:
             return block_row
-        if type(block_col) == tuple:
+        elif block_col:
             return block_col
-        if type(block_diag) == tuple:
+        elif block_diag:
             return block_diag
+        else:
+            return False
 
+    def random_move(self):
+        row = random.randint(0, 2)
+        col = random.randint(0, 2)
+        if self.board[row][col] == "_":
+            print("{} {}".format(row, col))
+        else:
+            self.random_move()
 
+    def decide_move(self):
+        win = self.winning_move()
+        block = self.blocking_move()
+        if win:
+            print("{} {}".format(win[0], win[1]))
+        elif block:
+            print("{} {}".format(block[0], block[1]))
+        else:
+            self.random_move()
 
-
-
-
-randy = Random_Bot(team, first_row, second_row, third_row)
-randy.decide_move()
+betbot = Better_Bot(team, first_row, second_row, third_row)
+betbot.decide_move()
