@@ -1,12 +1,6 @@
 import random
 
 
-team = input()
-first_row = input()
-second_row = input()
-third_row = input()
-
-
 class TicTacToe_Bot:
 
     def __init__(self, me, row1, row2, row3):
@@ -30,6 +24,7 @@ class TicTacToe_Bot:
         self.diagonals = [[row_one[0], row_two[1], row_three[2]],
                           [row_one[2], row_two[1], row_three[0]]
                          ]
+        self.corners = [(0, 0), (0, 2), (2, 0), (2, 2)]
 
     def create_board(self, row_one, row_two, row_three):
         return [row_one, row_two, row_three]
@@ -45,8 +40,44 @@ class TicTacToe_Bot:
     #            column3.append(row[2])
     #    return [column1, column2, column3]
 
+    def first_move(self, board):
+        count = 0
+        for row in board:
+            for r in row:
+                if r == "_":
+                    count += 1
+        if count == 9:
+            return True
+        else:
+            return False
+
+    def second_move(self, board):
+        count = 0
+        for row in board:
+            for r in row:
+                if r == "_":
+                    count += 1
+        if count == 8:
+            return True
+        else:
+            return False
+
+    def pick_corner(self, corners):
+        return random.choice(corners)
+
     def decide_move(self):
         raise NotImplementedError("Decide move must be implemented in subclass")
+
+
+class Random_Bot(TicTacToe_Bot):
+
+    def decide_move(self):
+        row = random.randint(0, 2)
+        col = random.randint(0, 2)
+        if self.board[row][col] not in "XO":
+            print("{} {}".format(row, col))
+        else:
+            self.decide_move()
 
 
 class Better_Bot(TicTacToe_Bot):
@@ -160,14 +191,21 @@ class Better_Bot(TicTacToe_Bot):
             self.random_move()
 
     def decide_move(self):
-        win = self.winning_move()
-        block = self.blocking_move()
-        if win:
-            print("{} {}".format(win[0], win[1]))
-        elif block:
-            print("{} {}".format(block[0], block[1]))
+        if self.first_move(self.board) == True:
+            corner = self.pick_corner(self.corners)
+            print("{} {}".format(corner[0], corner[1]))
+        elif self.second_move(self.board) == True:
+            if self.board[1][1] == "_":
+                print("{} {}".format(1, 1))
+            else:
+                corner = self.pick_corner(self.corners)
+                print("{} {}".format(corner[0], corner[1]))
         else:
-            self.random_move()
-
-betbot = Better_Bot(team, first_row, second_row, third_row)
-betbot.decide_move()
+            win = self.winning_move()
+            block = self.blocking_move()
+            if win:
+                print("{} {}".format(win[0], win[1]))
+            elif block:
+                print("{} {}".format(block[0], block[1]))
+            else:
+                self.random_move()
