@@ -24,46 +24,27 @@ class TicTacToe_Bot:
         self.diagonals = [[row_one[0], row_two[1], row_three[2]],
                           [row_one[2], row_two[1], row_three[0]]
                          ]
-        self.corners = [(0, 0), (0, 2), (2, 0), (2, 2)]
+        self.corners = [self.board[0][0], self.board[0][2], self.board[2][2],
+                        self.board[2][0]
+                        ]
 
     def create_board(self, row_one, row_two, row_three):
         return [row_one, row_two, row_three]
 
-    #def create_columns(self, board):
-    #    column1 = []
-    #    column2 = []
-    #    column3 = []
-    #    for row in board:
-    #        for ind, val in enumerate(row):
-    #            column1.append(row[0])
-    #            column2.append(row[1])
-    #            column3.append(row[2])
-    #    return [column1, column2, column3]
-
-    def first_move(self, board):
+    def what_move(self, board):
         count = 0
         for row in board:
             for r in row:
                 if r == "_":
                     count += 1
-        if count == 9:
-            return True
-        else:
-            return False
+        return count
 
-    def second_move(self, board):
-        count = 0
-        for row in board:
-            for r in row:
-                if r == "_":
-                    count += 1
-        if count == 8:
-            return True
-        else:
-            return False
-
-    def pick_corner(self, corners):
-        return random.choice(corners)
+    def open_corners(self, corners):
+        open_corners = []
+        for index, corner in enumerate(corners):
+            if corner == "_":
+                open_corners.append(index)
+        return open_corners
 
     def decide_move(self):
         raise NotImplementedError("Decide move must be implemented in subclass")
@@ -81,12 +62,6 @@ class Random_Bot(TicTacToe_Bot):
 
 
 class Better_Bot(TicTacToe_Bot):
-
-    #def strategy(self):
-    #    if self.first == True:
-    #        print("You are first")
-    #    else:
-    #        print("You are O's")
 
     def win_or_block(self, board, player):
         for index, row in enumerate(board):
@@ -182,6 +157,65 @@ class Better_Bot(TicTacToe_Bot):
         else:
             return False
 
+    def third_move(self, board):
+        if self.board[1][1] == "O":
+            print("{} {}".format(0, 2))
+        elif self.board[2] == "X__":
+            print("{} {}".format(2, 2))
+        else:
+            print("{} {}".format(0, 0))
+
+    def fourth_move(self, board):
+        if self.board[0][0] == "X" and self.board[2][2] == "X":
+            print("{} {}".format(2, 1))
+        elif self.board[2][0] == "X" and self.board[0][2] == "X":
+            print("{} {}".format(2, 1))
+        elif self.board[1][0] == "X" and self.board[1][2] == "X":
+            print("{} {}".format(2, 0))
+        elif self.board[0][1] == "X" and self.board[2][1] == "X":
+            print("{} {}".format(2, 0))
+        elif self.board[1][1] == "X" and self.board[0][2] == "X":
+            print("{} {}".format(2, 2))
+        elif self.board[2][0] == "X" and self.board[0][1] == "X":
+            print("{} {}".format(0, 0))
+        elif self.board[2][0] == "X" and self.board[1][2] == "X":
+            print("{} {}".format(2, 2))
+        elif self.board[0][0] == "X" and self.board[2][1] == "X":
+            print("{} {}".format(2, 0))
+        elif self.board[0][0] == "X" and self.board[1][2] == "X":
+            print("{} {}".format(0, 2))
+        elif self.board[0][2] == "X" and self.board[2][1] == "X":
+            print("{} {}".format(2, 2))
+        elif self.board[0][2] == "X" and self.board[1][0] == "X":
+            print("{} {}".format(0, 0))
+        elif self.board[0][1] == "X" and self.board[2][2] == "X":
+            print("{} {}".format(0, 2))
+        elif self.board[1][0] == "X" and self.board[2][2] == "X":
+            print("{} {}".format(2, 0))
+        elif self.board[0][1] == "X" and self.board[1][0] == "X":
+            print("{} {}".format(0, 0))
+        elif self.board[0][1] == "X" and self.board[1][2] == "X":
+            print("{} {}".format(0, 2))
+        elif self.board[1][0] == "X" and self.board[2][1] == "X":
+            print("{} {}".format(2, 0))
+        elif self.board[2][1] == "X" and self.board[1][2] == "X":
+            print("{} {}".format(2, 2))
+        else:
+            self.random_move()
+
+    def fifth_move(self):
+        open_corners = self.open_corners(self.corners)
+        if open_corners == [0]:
+            print("{} {}".format(0, 0))
+        elif open_corners == [1]:
+            print("{} {}".format(0, 2))
+        elif open_corners == [2]:
+            print("{} {}".format(2, 2))
+        elif open_corners == [3]:
+            print("{} {}".format(2, 0))
+        else:
+            print("{} {}".format(1, 1))
+
     def random_move(self):
         row = random.randint(0, 2)
         col = random.randint(0, 2)
@@ -191,21 +225,26 @@ class Better_Bot(TicTacToe_Bot):
             self.random_move()
 
     def decide_move(self):
-        if self.first_move(self.board) == True:
-            corner = self.pick_corner(self.corners)
-            print("{} {}".format(corner[0], corner[1]))
-        elif self.second_move(self.board) == True:
-            if self.board[1][1] == "_":
-                print("{} {}".format(1, 1))
-            else:
-                corner = self.pick_corner(self.corners)
-                print("{} {}".format(corner[0], corner[1]))
+        win = self.winning_move()
+        block = self.blocking_move()
+        if win:
+            print("{} {}".format(win[0], win[1]))
+        elif block:
+            print("{} {}".format(block[0], block[1]))
         else:
-            win = self.winning_move()
-            block = self.blocking_move()
-            if win:
-                print("{} {}".format(win[0], win[1]))
-            elif block:
-                print("{} {}".format(block[0], block[1]))
+            move = self.what_move(self.board)
+            if move == 9:
+                print("{} {}".format(2, 0))
+            elif move == 8:
+                if self.board[1][1] == "_":
+                    print("{} {}".format(1, 1))
+                else:
+                    print("{} {}".format(2, 0))
+            elif move == 7:
+                self.third_move(self.board)
+            elif move == 6:
+                self.fourth_move(self.board)
+            elif move == 5:
+                self.fifth_move()
             else:
                 self.random_move()
