@@ -40,11 +40,11 @@ class TicTacToe_Bot:
         return count
 
     def open_corners(self, corners):
-        open_corners = []
+        open_corn = []
         for index, corner in enumerate(corners):
             if corner == "_":
-                open_corners.append(index)
-        return open_corners
+                open_corn.append(index)
+        return open_corn
 
     def decide_move(self):
         raise NotImplementedError("Decide move must be implemented in subclass")
@@ -204,14 +204,14 @@ class Better_Bot(TicTacToe_Bot):
             self.random_move()
 
     def fifth_move(self):
-        open_corners = self.open_corners(self.corners)
-        if open_corners == [0]:
+        open_corn = self.open_corners(self.corners)
+        if open_corn == [0]:
             print("{} {}".format(0, 0))
-        elif open_corners == [1]:
+        elif open_corn == [1]:
             print("{} {}".format(0, 2))
-        elif open_corners == [2]:
+        elif open_corn == [2]:
             print("{} {}".format(2, 2))
-        elif open_corners == [3]:
+        elif open_corn == [3]:
             print("{} {}".format(2, 0))
         else:
             print("{} {}".format(1, 1))
